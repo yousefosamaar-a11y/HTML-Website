@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>لوحة التحكم - الطلبات</title>
+  <style>
+    body { font-family: Arial; background:#f9f9f9; padding:20px; direction:rtl; }
+    .order { background:#fff; padding:15px; border-radius:10px; margin-bottom:15px; box-shadow:0 0 5px rgba(0,0,0,.1); }
+    .order img { max-width:100px; margin-top:10px; border-radius:8px; }
+    .delete-btn { background:#d9534f; color:#fff; border:none; border-radius:5px; padding:5px 10px; cursor:pointer; margin-top:10px; }
+    .delete-btn:hover { background:#c9302c; }
+    #clearAll { display:block; margin:20px auto; background:#b02a37; color:#fff; padding:10px; border:none; border-radius:5px; cursor:pointer; }
+  </style>
+</head>
+<body>
+
+  <h2 style="text-align:center;">قائمة الطلبات</h2>
+  <div id="ordersList"></div>
+  <button id="clearAll">🗑 مسح كل الطلبات</button>
+
+  <script>
+    let orders = JSON.parse(localStorage.getItem("orders")) || [];
+    const ordersList = document.getElementById("ordersList");
+
+    function displayOrders() {
+      ordersList.innerHTML = "";
+      orders.forEach((o, i) => {
+        const div = document.createElement("div");
+        div.classList.add("order");
+        div.innerHTML = `
+          <p><strong>الاسم:</strong> ${o.firstName} ${o.lastName}</p>
+          <p><strong>الهاتف:</strong> ${o.phone}</p>
+          <p><strong>العنوان:</strong> ${o.address}</p>
+          <p><strong>الصنف:</strong> ${o.product}</p>
+          <p><strong>الكمية:</strong> ${o.quantity}</p>
+          ${o.image ? `<img src="${o.image}" alt="صورة المنتج">` : ""}
+          <button class="delete-btn" onclick="deleteOrder(${i})">حذف</button>
+        `;
+        ordersList.appendChild(div);
+      });
+    }
+
+    function deleteOrder(index) {
+      orders.splice(index, 1);
+      localStorage.setItem("orders", JSON.stringify(orders));
+      displayOrders();
+    }
+
+    document.getElementById("clearAll").addEventListener("click", () => {
+      if (confirm("هل أنت متأكد أنك تريد مسح كل الطلبات؟")) {
+        orders = [];
+        localStorage.setItem("orders", JSON.stringify(orders));
+        displayOrders();
+      }
+    });
+
+    displayOrders();
+  </script>
+</body>
+</html>
